@@ -1,5 +1,8 @@
 package com.mmall.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServiceResponse;
 import com.mmall.dao.CategoryMapper;
@@ -10,10 +13,13 @@ import com.mmall.service.IProductService;
 import com.mmall.util.DateTimeUtil;
 import com.mmall.util.PropertiesUtil;
 import com.mmall.vo.ProductDetailVo;
+import com.mmall.vo.ProductListVo;
 import org.apache.commons.lang3.StringUtils;
 import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service("iProductService")
 public class ProductServiceImpl implements IProductService {
@@ -110,5 +116,32 @@ public class ProductServiceImpl implements IProductService {
         return productDetailVo;
 
     }
+
+    public ServiceResponse<PageInfo> getProductList(int pageNum,int pageSize){
+
+        PageHelper.startPage(pageNum,pageSize);
+        List<Product> list = productMapper.selectList();
+        List<ProductListVo> productListVos = Lists.newArrayList();
+        for (Product product : list) {
+            ProductListVo productListVo= assembleProductListVo(product);
+            productListVos.add(productListVo);
+        }
+        PageInfo pageResult =new PageInfo();
+        pageResult.setList(productListVos);
+        return ServiceResponse.createBySuccess(pageResult);
+    }
+    private ProductListVo assembleProductListVo(Product product){
+        ProductListVo productListVo = new ProductListVo();
+        productListVo.setId(product.getId());
+        productListVo.setName(product.getName());
+        productListVo.setCategoryId(product.getCategoryId());
+        productListVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix","http://img.happymmall.com/"));
+        productListVo.setMainImage(product.getMainImage());
+        productListVo.setPrice(product.getPrice());
+        productListVo.setSubtitle(product.getSubtitle());
+        productListVo.setStatus(product.getStatus());
+        return productListVo;
+    }
+
 
 }
