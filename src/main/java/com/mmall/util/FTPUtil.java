@@ -19,6 +19,7 @@ public class FTPUtil {
     private static String ftpIp = PropertiesUtil.getProperty("ftp.server.ip");
     private static String ftpUser = PropertiesUtil.getProperty("ftp.user");
     private static String ftpPass = PropertiesUtil.getProperty("ftp.pass");
+    private static String remotePath = PropertiesUtil.getProperty("ftp.remotePath");
 
     public FTPUtil(String ip,int port,String user,String pwd){
         this.ip = ip;
@@ -29,7 +30,7 @@ public class FTPUtil {
     public static boolean uploadFile(List<File> fileList) throws IOException {
         FTPUtil ftpUtil = new FTPUtil(ftpIp,21,ftpUser,ftpPass);
         logger.info("开始连接ftp服务器");
-        boolean result = ftpUtil.uploadFile("img",fileList);
+        boolean result = ftpUtil.uploadFile(remotePath,fileList);
         logger.info("开始连接ftp服务器,结束上传,上传结果:{}");
         return result;
     }
